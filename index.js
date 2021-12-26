@@ -7,6 +7,8 @@ const usersRoute = require('./src/routes/forUsers');
 const transacRoute = require('./src/routes/forDeal');
 const morgan = require('morgan');
 
+const PORT = process.env.PORT || 2000;
+
 const app = express();
 
 app.use(express.json());
@@ -29,7 +31,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-const port = 2000;
-app.listen(port, () => {
-  console.log(`server mulai dari ${port}`);
+app.listen(PORT, () => {
+  console.log(`server mulai dari ${PORT}`);
 });
