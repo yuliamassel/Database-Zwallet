@@ -99,10 +99,10 @@ const login = async (req, res, next) => {
 
     const resultHash = bcrypt.compare(password, user.password);
 
-    if (resultHash) {
-      helpers.response(res, null, 200, 'nice youve succesfully login');
-    } else {
+    if (!resultHash) {
       next(createError(403, 'sorry you entered wrong password'));
+    } else {
+      helpers.response(res, null, 200, null, 'nice youve succesfully login');
     }
   } catch (error) {
     console.log(error);
