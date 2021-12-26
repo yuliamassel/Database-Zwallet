@@ -1,81 +1,78 @@
-const connection = require("../configurasi/connectDB");
+const connection = require('../configurasi/connectDB');
 
 // POST
 const createDeal = (data) => {
-    return new Promise((resolve, reject) => {
-      connection.query("INSERT INTO transaction SET ?", data, (error, result) => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-        }
-      });
+  return new Promise((resolve, reject) => {
+    connection.query('INSERT INTO transaction SET ?', data, (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
     });
-  };
+  });
+};
 
 // GET
 const findDeal = () => {
-    return new Promise((resolve, reject) => {
-      connection.query("SELECT * FROM transaction", (error, result)  => {
-        if (!error) {
-          resolve(result);
-        } else {
-          reject(error);
-        }
-      });
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM transaction', (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
     });
-  };
+  });
+};
 
-//PUT
+// PUT
 const updateDeal = (data, id) => {
-    return new Promise((resolve, reject) => {
-      connection.query(
-        "UPDATE transaction SET ? WHERE id=?",
-        [data, id],
-        (error, result) => {
-          if (!error) {
-            resolve(result);
-          } else {
-            reject(error);
-          }
-        }
-      );
-    });
-  };
-
-//DELETE
-const deleteDeal = (id) => {
-    return new Promise((resolve, reject) => {
-      connection.query("DELETE FROM transaction WHERE id=?", id, (error, result) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      'UPDATE transaction SET ? WHERE id=?',
+      [data, id],
+      (error, result) => {
         if (!error) {
           resolve(result);
         } else {
           reject(error);
         }
-      });
-    });
-  };
+      }
+    );
+  });
+};
 
-//GET DETAIL
+// DELETE
+const deleteDeal = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query('DELETE FROM transaction WHERE id=?', id, (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        reject(error);
+      }
+    });
+  });
+};
+
+// GET DETAIL
 const detailDeal = (id) => {
-    return new Promise((resolve, reject) => {
-      connection.query("SELECT * FROM transaction WHERE id=?", id, (error, result) => {
-        {
-          if (!error) {
-            resolve(result[0]);
-          } else {
-            reject(error);
-          }
-        }
-      });
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM transaction WHERE id=?', id, (error, result) => {
+      if (!error) {
+        resolve(result[0]);
+      } else {
+        reject(error);
+      }
     });
-  };
-
+  });
+};
 
 module.exports = {
-    createDeal,
-    findDeal,
-    updateDeal,
-    deleteDeal,
-    detailDeal
-}
+  createDeal,
+  findDeal,
+  updateDeal,
+  deleteDeal,
+  detailDeal
+};
