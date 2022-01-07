@@ -11,7 +11,7 @@ const getUsers = async (req, res, next) => {
     const sort = req.query.sort || 'create_at';
     const updated = req.query.updated || 'asc';
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 100;
+    const limit = parseInt(req.query.limit) || 3;
     const offset = (page - 1) * limit;
     // console.log(search);
 

@@ -1,7 +1,7 @@
 CREATE DATABASE task_week12;
 
 CREATE TABLE users (
-    id INT AUTO_INCREMENT,
+    id INT,
     username VARCHAR (64) NOT NULL,
     email VARCHAR (64) NOT NULL,
     password VARCHAR (64) NOT NULL,

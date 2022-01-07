@@ -6,11 +6,13 @@ const helperUrl = require('./src/helper/help'); // kemungkinan masalah error han
 const usersRoute = require('./src/routes/forUsers');
 const transacRoute = require('./src/routes/forDeal');
 const morgan = require('morgan');
+const cors = require('cors')
 
 const PORT = process.env.PORT || 2000;
 
 const app = express();
 
+app.use(cors())
 app.use(express.json());
 app.use(commonMiddle.myConsole);
 app.use(morgan('dev'));
