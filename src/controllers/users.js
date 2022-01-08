@@ -61,7 +61,7 @@ const postUsers = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    const { username, email, password, addres, telephone } = req.body;
+    const { username, email, password } = req.body;
 
     const user = await modUsers.findData(email);
 
@@ -74,9 +74,7 @@ const register = async (req, res, next) => {
       id: uuidv4(),
       username,
       email,
-      password: hashPassword,
-      addres,
-      telephone
+      password: hashPassword
     };
 
     const finalResult = await modUsers.insertData(data);
