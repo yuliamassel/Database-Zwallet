@@ -1,12 +1,12 @@
 CREATE DATABASE task_week12;
 
 CREATE TABLE users (
-    id INT,
+    id VARCHAR(64),
     username VARCHAR (64) NOT NULL,
     email VARCHAR (64) NOT NULL,
     password VARCHAR (64) NOT NULL,
-    addres VARCHAR (128) NOT NULL,
-    telephone VARCHAR (64) NOT NULL,
+    addres VARCHAR (128) ,
+    telephone VARCHAR (64),
     create_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMP,
     PRIMARY KEY (id)

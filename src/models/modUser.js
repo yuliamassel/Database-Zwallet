@@ -81,7 +81,7 @@ const deleteUsers = (id) => {
 
 const detailUsers = (id) => {
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM users WHERE id=?', id, (error, result) => {
+    connection.query('SELECT * FROM users LEFT JOIN wallet ON users.id = wallet.user_id WHERE users.id = ?', id, (error, result) => {
       if (!error) {
         resolve(result[0]);
       } else {

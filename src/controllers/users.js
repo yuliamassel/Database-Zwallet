@@ -1,9 +1,10 @@
 
-const modUsers = require('../models/modUser');
 const { v4: uuidv4 } = require('uuid');
 const helpers = require('../helper/help');
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
+const modUsers = require('../models/modUser');
+// const modWallet = require('../models/modWalet');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -61,7 +62,7 @@ const postUsers = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, addres, telephone } = req.body;
 
     const user = await modUsers.findData(email);
 
@@ -74,10 +75,13 @@ const register = async (req, res, next) => {
       id: uuidv4(),
       username,
       email,
-      password: hashPassword
+      password: hashPassword,
+      addres,
+      telephone
     };
 
     const finalResult = await modUsers.insertData(data);
+    // const makeWallet = await modWallet.createData(data);
     helpers.response(res, finalResult, 200, 'great you come in');
   } catch (error) {
     console.log(error);

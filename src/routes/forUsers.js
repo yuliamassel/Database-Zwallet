@@ -9,6 +9,6 @@ route
   .post('/register', usersController.register)
   .put('/:id', usersController.updateUsers)
   .delete('/:id', usersController.deleteUsers)
-  .get('/:id', commonMiddle.forUpdate, usersController.detailUsers);
+  .get('/:id', usersController.detailUsers);
 
 module.exports = route;
