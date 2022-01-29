@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const helpers = require('../helper/help');
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const modUsers = require('../models/modUser');
 // const modWallet = require('../models/modWalet');
 
@@ -99,13 +100,19 @@ const login = async (req, res, next) => {
       return next(createError(403, 'please enter correct email'));
     }
 
-    const resultHash = bcrypt.compare(password, user.password);
+    const resultHash = await bcrypt.compare(password, user.password);
 
-    if (resultHash) {
-      helpers.response(res, user, 200, null, 'nice youve succesfully login');
-    } else {
-      next(createError(403, 'sorry you entered wrong password'));
-    }
+    if (!resultHash) return next(createError(403, 'sorry you entered wrong password'));
+    const secretKey = process.env.SECRET_KEY_JWT;
+    const payload = {
+      email: user.email,
+      username: user.username,
+      role: 'admin'
+    };
+    const expireToken = { expiresIn: '1 days' };
+    const token = jwt.sign(payload, secretKey, expireToken);
+    user.token = token;
+    helpers.response(res, user, 200, null, 'nice youve succesfully login');
   } catch (error) {
     console.log(error);
     next(createError(500, new createError.InternalServerError()));
