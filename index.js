@@ -22,6 +22,8 @@ app.use('/users', usersRoute);
 app.use('/wallet', walletRoute);
 app.use('/transaction', transacRoute);
 
+app.use('/file', express.static('./uploads'));
+
 app.use(helperUrl.handleUrl);
 // error handling
 app.use((err, req, res, next) => {

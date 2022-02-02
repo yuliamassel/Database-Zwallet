@@ -4,6 +4,7 @@ const helpers = require('../helper/help');
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const client = require('../configurasi/redis');
 const modUsers = require('../models/modUser');
 // const modWallet = require('../models/modWalet');
 
@@ -40,20 +41,22 @@ const getUsers = async (req, res, next) => {
 };
 
 const postUsers = async (req, res, next) => {
+  console.log(req.body);
   try {
     const { username, email, password, addres, telephone } = req.body;
+    const fileName = req.file.filename;
     const data = {
+      id: uuidv4(),
       username,
       email,
       password,
       addres,
       telephone,
+      photo: `http://localhost:2002/file/${fileName}`,
       updated: new Date()
     };
     const result = await modUsers.postUsers(data);
-    res.json({
-      result: result
-    });
+    helpers.response(res, result, 200, 'great you come in');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();
@@ -78,11 +81,13 @@ const register = async (req, res, next) => {
       email,
       password: hashPassword,
       addres,
-      telephone
+      telephone,
+      verify: 'no'
     };
 
     const finalResult = await modUsers.insertData(data);
     // const makeWallet = await modWallet.createData(data);
+    helpers.sendEmail(email);
     helpers.response(res, finalResult, 200, 'great you come in');
   } catch (error) {
     console.log(error);
@@ -107,12 +112,25 @@ const login = async (req, res, next) => {
     const payload = {
       email: user.email,
       username: user.username,
-      role: 'admin'
+      role: user.role
     };
     const expireToken = { expiresIn: '1 days' };
     const token = jwt.sign(payload, secretKey, expireToken);
     user.token = token;
     helpers.response(res, user, 200, null, 'nice youve succesfully login');
+  } catch (error) {
+    console.log(error);
+    next(createError(500, new createError.InternalServerError()));
+  }
+};
+
+const profile = async (req, res, next) => {
+  const email = req.email;
+  console.log(req.email);
+  try {
+    const user = await modUsers.getUserByEmail(email);
+    console.log(user);
+    helpers.response(res, user, 200, null, 'berhasil');
   } catch (error) {
     console.log(error);
     next(createError(500, new createError.InternalServerError()));
@@ -162,8 +180,13 @@ const detailUsers = async (req, res, next) => {
     const id = req.params.id;
 
     const result = await modUsers.detailUsers(id);
+
+    await client.connect();
+    await client.setEx(`users/${id}`, 60 * 60, JSON.stringify(result));
+
     res.json({
-      result: result
+      result: result,
+      messages: 'data from database'
     });
   } catch (error) {
     console.log(error);
@@ -179,5 +202,6 @@ module.exports = {
   deleteUsers,
   detailUsers,
   register,
-  login
+  login,
+  profile
 };

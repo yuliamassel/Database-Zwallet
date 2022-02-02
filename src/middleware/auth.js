@@ -12,7 +12,8 @@ const veryfied = (req, res, next) => {
   try {
     const secretKey = process.env.SECRET_KEY_JWT;
     const decoded = jwt.verify(token, secretKey);
-    console.log('hasil verifikasi', decoded);
+    req.email = decoded.email;
+    req.role = decoded.role;
     next();
   } catch (error) {
     if (error && error.name === 'JsonWebTokenError') {
@@ -24,7 +25,13 @@ const veryfied = (req, res, next) => {
     }
   }
 };
+const isAdmin = (req, res, next) => {
+  const role = req.role;
+  if (role !== 'admin') return next(createError(403, 'Access Denied!'));
+  next();
+};
 
 module.exports = {
-  veryfied
+  veryfied,
+  isAdmin
 };
