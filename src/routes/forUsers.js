@@ -11,7 +11,7 @@ route
   .get('/', veryfied, usersController.getUsers)
   .post('/login', usersController.login)
   .post('/register', usersController.register)
-  .put('/:id', veryfied, usersController.updateUsers)
+  .put('/:id', upload.single('photo'), usersController.updateUsers)
   .delete('/:id', veryfied, isAdmin, usersController.deleteUsers)
   .get('/:id', veryfied, chaceUsers, usersController.detailUsers);
 

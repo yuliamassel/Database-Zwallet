@@ -44,19 +44,20 @@ const postUsers = async (req, res, next) => {
   console.log(req.body);
   try {
     const { username, email, password, addres, telephone } = req.body;
-    const fileName = req.file.filename;
+    // const fileName = req.file.filename;
+    const hashPassword = await bcrypt.hash(password, 10);
     const data = {
       id: uuidv4(),
       username,
       email,
-      password,
+      password: hashPassword,
       addres,
       telephone,
-      photo: `http://localhost:2002/file/${fileName}`,
+      // photo: `http://localhost:2002/file/${fileName}`,
       updated: new Date()
     };
     const result = await modUsers.postUsers(data);
-    helpers.response(res, result, 200, 'great you come in');
+    helpers.response(res, result, 200, null, 'great you come in');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();
@@ -141,18 +142,17 @@ const updateUsers = async (req, res, next) => {
   try {
     const id = req.params.id;
     const { username, email, password, addres, telephone } = req.body;
+    const hashPassword = await bcrypt.hash(password, 10);
     const data = {
       username,
       email,
-      password,
+      password: hashPassword,
       addres,
       telephone,
       updated: new Date()
     };
     const result = await modUsers.updateUsers(data, id);
-    res.json({
-      result: result
-    });
+    helpers.response(res, result, 200, 'update profile succes');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();
@@ -165,9 +165,7 @@ const deleteUsers = async (req, res, next) => {
     const id = req.params.id;
 
     const result = await modUsers.deleteUsers(id);
-    res.json({
-      result: result
-    });
+    helpers.response(res, result, 200, null, 'succes delete user');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();
@@ -181,13 +179,8 @@ const detailUsers = async (req, res, next) => {
 
     const result = await modUsers.detailUsers(id);
 
-    await client.connect();
     await client.setEx(`users/${id}`, 60 * 60, JSON.stringify(result));
-
-    res.json({
-      result: result,
-      messages: 'data from database'
-    });
+    helpers.response(res, result, 200, null, 'Data From Database');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();

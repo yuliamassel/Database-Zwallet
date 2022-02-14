@@ -27,8 +27,8 @@ app.use('/file', express.static('./uploads'));
 app.use(helperUrl.handleUrl);
 // error handling
 app.use((err, req, res, next) => {
-  const codeStatus = err.status;
-  const message = err.message;
+  const codeStatus = err.status || 500;
+  const message = err.message || 'Internal Server Error';
   res.status(codeStatus);
   res.json({
     message: message

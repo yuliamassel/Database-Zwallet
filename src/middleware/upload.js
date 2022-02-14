@@ -1,4 +1,4 @@
-const { path } = require('express/lib/application');
+const path = require('path');
 const multer = require('multer');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

@@ -68,10 +68,24 @@ const detailData = (id) => {
   });
 };
 
+const BalanceWallet = (idUser) => {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM wallet WHERE user_id = ?', idUser, (error, result) => {
+      if (!error) {
+        resolve(result);
+      } else {
+        console.log(error);
+        reject(error);
+      }
+    });
+  });
+};
+
 module.exports = {
   createData,
   findData,
   updateData,
   deleteData,
-  detailData
+  detailData,
+  BalanceWallet
 };

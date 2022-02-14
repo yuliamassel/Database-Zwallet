@@ -1,7 +1,6 @@
 const client = require('../configurasi/redis');
 
 const chaceUsers = async (req, res, next) => {
-  client.connect();
   const id = req.params.id;
   const users = await client.get(`users/${id}`);
   if (users !== null) {

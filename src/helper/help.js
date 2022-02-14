@@ -30,9 +30,39 @@ const sendEmail = async (toEmail) => {
   const info = await transporter.sendMail({
     from: '"Zwallet 👻" <masselyulia75@gmail.com>', // sender address
     to: toEmail, // list of receivers
-    subject: 'Hello ✔', // Subject line
+    subject: 'Welcome to Zwallet', // Subject line
     // text: 'Hello world?', // plain text body
-    html: '<b>Hello world?</b>' // html body
+    html: `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+        .wrapper{
+            width: 700px;
+            height: 200px;
+            background-color: #6379f4;
+            margin: 0 auto;
+            border-radius: 8px;
+            margin: 3vw;
+        }
+        .wrapper h1{
+          color: #ffffff;
+          text-align: center;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1>Welcome to Zwallet App</h1>
+            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatum ullam recusandae deserunt enim natus illo impedit neque excepturi deleniti in.</p>
+            <h3>please verify your account</h3>
+            <a style="color: red;" href="http://localhost:5000/users/verifikasi-main/sdfasdkfsakldfjskdfjn2ensdf">tekan verifikasi</a>
+        </div>
+    </body>
+    </html>` // html body
   });
   console.log(info);
 };

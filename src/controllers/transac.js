@@ -10,12 +10,16 @@ const createDeal = async (req, res, next) => {
     const { source_id, destination_id, amount, balance_left, notes } = req.body;
     const data = {
       // eslint-disable-next-line camelcase
-      source_id, destination_id, amount, balance_left, notes
+      source_id,
+      // eslint-disable-next-line camelcase
+      destination_id,
+      amount,
+      // eslint-disable-next-line camelcase
+      balance_left,
+      notes
     };
     const result = await modDeal.createDeal(data);
-    res.json({
-      result: result
-    });
+    helpers.response(res, result, 200, null, 'Transaction succes');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();
