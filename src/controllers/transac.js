@@ -1,5 +1,6 @@
 
 const modDeal = require('../models/modDeal');
+// const modUser = require('../models/modUser');
 const helpers = require('../helper/help');
 const createError = require('http-errors');
 
@@ -10,16 +11,21 @@ const createDeal = async (req, res, next) => {
     const { source_id, destination_id, amount, balance_left, notes } = req.body;
     const data = {
       // eslint-disable-next-line camelcase
-      source_id,
+      source_id: source_id,
       // eslint-disable-next-line camelcase
-      destination_id,
-      amount,
+      destination_id: destination_id,
+      amount: amount,
       // eslint-disable-next-line camelcase
-      balance_left,
-      notes
+      balance_left: balance_left,
+      create_at: new Date(),
+      notes: notes
     };
     const result = await modDeal.createDeal(data);
-    helpers.response(res, result, 200, null, 'Transaction succes');
+    // const email = req.email;
+    // const senderWallet = await modUser.getUserByEmail(email);
+    // console.log(senderWallet, 'ini WALLET');
+    console.log(result, 'ini di BACKEND');
+    helpers.resTransfer(res, data, 200, null, 'Transaction succes');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();
@@ -99,11 +105,24 @@ const detailDeal = async (req, res, next) => {
     });
   }
 };
+const profile = async (req, res, next) => {
+  const email = req.email;
+  console.log(req.email);
+  try {
+    const user = await modDeal.getUserByEmail(email);
+    console.log(user);
+    helpers.response(res, user, 200, null, 'berhasil');
+  } catch (error) {
+    console.log(error);
+    next(createError(500, new createError.InternalServerError()));
+  }
+};
 
 module.exports = {
   createDeal,
   findDeal,
   updateDeal,
   deleteDeal,
-  detailDeal
+  detailDeal,
+  profile
 };

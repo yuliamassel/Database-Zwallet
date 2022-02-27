@@ -17,6 +17,15 @@ const response = (res, result, status, pagination, message) => {
   });
 };
 
+const resTransfer = (res, result, status, message) => {
+  res.status(status).json({
+    status: 'Succes',
+    code: status,
+    data: result,
+    message: message || ''
+  });
+};
+
 const sendEmail = async (toEmail) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -70,5 +79,6 @@ const sendEmail = async (toEmail) => {
 module.exports = {
   handleUrl,
   response,
-  sendEmail
+  sendEmail,
+  resTransfer
 };

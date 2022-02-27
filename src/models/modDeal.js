@@ -5,9 +5,9 @@ const createDeal = (data) => {
   return new Promise((resolve, reject) => {
     connection.query('INSERT INTO transaction SET ?', data, (error, result) => {
       if (!error) {
-        connection.query('UPDATE wallet SET ballance = ballance - ?  WHERE id = ?', [data.amount, data.source_id], (error, result) => {
+        connection.query('UPDATE wallet SET ballance = ballance - ?  WHERE user_id = ?', [data.amount, data.source_id], (error, result) => {
           if (!error) {
-            connection.query('UPDATE wallet SET ballance = ballance + ? WHERE id = ?', [data.amount, data.destination_id], (error, result) => {
+            connection.query('UPDATE wallet SET ballance = ballance + ? WHERE user_id = ?', [data.amount, data.destination_id], (error, result) => {
               if (!error) {
                 resolve(result);
               } else {
@@ -54,6 +54,18 @@ const updateDeal = (data, id) => {
   });
 };
 
+const getUserByEmail = (email) => {
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM users INNER JOIN wallet ON users.id = wallet.user_id WHERE users.email = ?', email, (error, result) => {
+      if (!error) {
+        resolve(result[0]);
+      } else {
+        reject(error);
+      }
+    });
+  });
+};
+
 // DELETE
 const deleteDeal = (id) => {
   return new Promise((resolve, reject) => {
@@ -85,5 +97,6 @@ module.exports = {
   findDeal,
   updateDeal,
   deleteDeal,
-  detailDeal
+  detailDeal,
+  getUserByEmail
 };

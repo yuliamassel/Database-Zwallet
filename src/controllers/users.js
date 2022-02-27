@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const client = require('../configurasi/redis');
 const modUsers = require('../models/modUser');
-// const modWallet = require('../models/modWalet');
+const modWallet = require('../models/modWalet');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -43,17 +43,16 @@ const getUsers = async (req, res, next) => {
 const postUsers = async (req, res, next) => {
   console.log(req.body);
   try {
-    const { username, email, password, addres, telephone } = req.body;
-    // const fileName = req.file.filename;
+    const { username, email, password, addres } = req.body;
+    const fileName = req.file.filename;
     const hashPassword = await bcrypt.hash(password, 10);
     const data = {
       id: uuidv4(),
       username,
       email,
       password: hashPassword,
+      photo: `http://localhost:2002/file/${fileName}`,
       addres,
-      telephone,
-      // photo: `http://localhost:2002/file/${fileName}`,
       updated: new Date()
     };
     const result = await modUsers.postUsers(data);
@@ -87,9 +86,9 @@ const register = async (req, res, next) => {
     };
 
     const finalResult = await modUsers.insertData(data);
-    // const makeWallet = await modWallet.createData(data);
+    const makeWallet = await modWallet.createData(data);
     helpers.sendEmail(email);
-    helpers.response(res, finalResult, 200, 'great you come in');
+    helpers.response(res, finalResult, makeWallet, 200, 'great you come in');
   } catch (error) {
     console.log(error);
     next(new createError.InternalServerError());
@@ -101,7 +100,7 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     const [user] = await modUsers.findData(email);
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return next(createError(403, 'please enter correct email'));
     }
@@ -130,7 +129,7 @@ const profile = async (req, res, next) => {
   console.log(req.email);
   try {
     const user = await modUsers.getUserByEmail(email);
-    console.log(user);
+    // console.log(user);
     helpers.response(res, user, 200, null, 'berhasil');
   } catch (error) {
     console.log(error);
@@ -141,14 +140,15 @@ const profile = async (req, res, next) => {
 const updateUsers = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const { username, email, password, addres, telephone } = req.body;
+    const { username, email, password, addres } = req.body;
+    const fileName = req.file.filename;
     const hashPassword = await bcrypt.hash(password, 10);
     const data = {
       username,
       email,
+      photo: `http://localhost:2002/file/${fileName}`,
       password: hashPassword,
       addres,
-      telephone,
       updated: new Date()
     };
     const result = await modUsers.updateUsers(data, id);

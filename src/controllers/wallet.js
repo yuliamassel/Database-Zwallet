@@ -36,6 +36,19 @@ const findData = async (req, res, next) => {
   }
 };
 
+const findWallet = async (req, res, next) => {
+  const idUser = req.user_id;
+  console.log(req.user_id);
+  try {
+    const user = await modWallet.BalanceWallet(idUser);
+    console.log(user, 'WOI AYOLAH');
+    helpers.response(res, user, 200, null, 'berhasil');
+  } catch (error) {
+    console.log(error);
+    next(createError(500, new createError.InternalServerError()));
+  }
+};
+
 // PUT atau Upadate data
 const updateData = async (req, res, next) => {
   try {
@@ -102,5 +115,6 @@ module.exports = {
   findData,
   updateData,
   deleteData,
-  detailData
+  detailData,
+  findWallet
 };
