@@ -92,11 +92,44 @@ const detailDeal = (id) => {
   });
 };
 
+const history = ({ userId, sort, order, limit, offset }) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT transaction.id, transaction.source_id, users.email, users.telephone, balance_left, transaction.receiver_name, transaction.receiver_telephone, transaction.receiver_photo, transaction.amount, transaction.notes, transaction.date, transaction.status FROM transaction INNER JOIN users ON transaction.source_id = users.id INNER JOIN wallet ON wallet.user_id = users.id WHERE transaction.source_id = ? ORDER BY ?? ${order} LIMIT ? OFFSET ?`,
+      [userId, sort, limit, offset],
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
+      }
+    );
+  });
+};
+
+const getTransactionByUserId = (userId) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      'SELECT COUNT(*) AS total FROM transaction WHERE user_id = ?',
+      userId,
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
+      }
+    );
+  });
+};
 module.exports = {
   createDeal,
   findDeal,
   updateDeal,
   deleteDeal,
   detailDeal,
-  getUserByEmail
+  getUserByEmail,
+  history,
+  getTransactionByUserId
 };

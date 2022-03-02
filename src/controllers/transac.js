@@ -1,4 +1,5 @@
 
+// const { v4: uuidv4 } = require('uuid');
 const modDeal = require('../models/modDeal');
 // const modUser = require('../models/modUser');
 const helpers = require('../helper/help');
@@ -118,11 +119,49 @@ const profile = async (req, res, next) => {
   }
 };
 
+const history = async (req, res, next) => {
+  try {
+    const userId = req.id;
+    const sort = req.query.sort || 'date';
+    const order = req.query.order || 'desc';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 4;
+    const offset = (page - 1) * limit;
+    const result = await modDeal.history({
+      userId,
+      sort,
+      order,
+      limit,
+      offset
+    });
+    const calcResult = await modDeal.getTransactionByUserId(
+      userId
+    );
+    const { total } = calcResult[0];
+    helpers.resTransfer(
+      res,
+      result,
+      200,
+      `Data requests success! Total transactions from user with id: ${userId} are ${total}`,
+      {
+        currentPage: page,
+        limit: limit,
+        totalTransaction: total,
+        totalPage: Math.ceil(total / limit)
+      }
+    );
+  } catch (error) {
+    console.log(error.message);
+    next({ status: 500, message: 'Internal Server Error!' });
+  }
+};
+
 module.exports = {
   createDeal,
   findDeal,
   updateDeal,
   deleteDeal,
   detailDeal,
-  profile
+  profile,
+  history
 };

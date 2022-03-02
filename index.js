@@ -25,6 +25,10 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('USER OFFLINE');
   });
+  socket.emit('message for new user', 'halo selamat datang, ini promo buat kamu');
+  socket.on('Continue', (data) => {
+    console.log(data);
+  });
 });
 
 io.listen(server);

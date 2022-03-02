@@ -7,6 +7,7 @@ route
   .post('/', transacController.createDeal)
   // .get('/profile', veryfied, transacController.profile)
   .get('/', transacController.findDeal)
+  .get('/history', transacController.history)
   .put('/:id', transacController.updateDeal)
   .delete('/:id', transacController.deleteDeal)
   .get('/:id', transacController.detailDeal);

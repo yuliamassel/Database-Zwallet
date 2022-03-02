@@ -1,7 +1,7 @@
 const express = require('express');
 const usersController = require('../controllers/users');
-const { veryfied, isAdmin } = require('../middleware/auth');
-const { chaceUsers } = require('../middleware/redis');
+const { veryfied } = require('../middleware/auth');
+// const { chaceUsers } = require('../middleware/redis');
 const route = express.Router();
 // const commonMiddle = require('../middleware/middle');
 const { upload } = require('../middleware/upload');
@@ -12,7 +12,13 @@ route
   .post('/login', usersController.login)
   .post('/register', usersController.register)
   .put('/:id', upload.single('photo'), usersController.updateUsers)
-  .delete('/:id', veryfied, isAdmin, usersController.deleteUsers)
-  .get('/:id', veryfied, chaceUsers, usersController.detailUsers);
+  .put(
+    '/profile/photo',
+    veryfied,
+    upload.single('photo'),
+    usersController.addPhoto
+  )
+  .delete('/:id', veryfied, usersController.deleteUsers)
+  .get('/:id', veryfied, usersController.detailUsers);
 
 module.exports = route;

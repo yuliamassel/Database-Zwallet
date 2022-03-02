@@ -52,11 +52,27 @@ const postUsers = (data) => {
   });
 };
 
-const updateUsers = (data, id) => {
+const updateUsers = (data, email) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      'UPDATE users SET ? WHERE id=?',
-      [data, id],
+      'UPDATE users SET ? WHERE email=?',
+      [data, email],
+      (error, result) => {
+        if (!error) {
+          resolve(result);
+        } else {
+          reject(error);
+        }
+      }
+    );
+  });
+};
+
+const updatePhoto = (data, email) => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      'UPDATE users SET ? WHERE email=?',
+      [data, email],
       (error, result) => {
         if (!error) {
           resolve(result);
@@ -125,5 +141,6 @@ module.exports = {
   usersCount,
   findData,
   insertData,
-  getUserByEmail
+  getUserByEmail,
+  updatePhoto
 };

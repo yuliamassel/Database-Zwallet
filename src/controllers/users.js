@@ -4,7 +4,7 @@ const helpers = require('../helper/help');
 const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const client = require('../configurasi/redis');
+// const client = require('../configurasi/redis');
 const modUsers = require('../models/modUser');
 const modWallet = require('../models/modWalet');
 
@@ -44,14 +44,14 @@ const postUsers = async (req, res, next) => {
   console.log(req.body);
   try {
     const { username, email, password, addres } = req.body;
-    const fileName = req.file.filename;
+    // const fileName = req.file.filename;
     const hashPassword = await bcrypt.hash(password, 10);
     const data = {
       id: uuidv4(),
       username,
       email,
       password: hashPassword,
-      photo: `http://localhost:2002/file/${fileName}`,
+      // photo: `http://localhost:2002/file/${fileName}`,
       addres,
       updated: new Date()
     };
@@ -141,12 +141,12 @@ const updateUsers = async (req, res, next) => {
   try {
     const id = req.params.id;
     const { username, email, password, addres } = req.body;
-    const fileName = req.file.filename;
+    // const fileName = req.file.filename;
     const hashPassword = await bcrypt.hash(password, 10);
     const data = {
       username,
       email,
-      photo: `http://localhost:2002/file/${fileName}`,
+      // photo: `http://localhost:2002/file/${fileName}`,
       password: hashPassword,
       addres,
       updated: new Date()
@@ -179,12 +179,33 @@ const detailUsers = async (req, res, next) => {
 
     const result = await modUsers.detailUsers(id);
 
-    await client.setEx(`users/${id}`, 60 * 60, JSON.stringify(result));
+    // await client.setEx(`users/${id}`, 60 * 60, JSON.stringify(result));
     helpers.response(res, result, 200, null, 'Data From Database');
   } catch (error) {
     console.log(error);
     const err = new createError.InternalServerError();
     next(err);
+  }
+};
+
+const addPhoto = async (req, res, next) => {
+  try {
+    // const fileName = req.file.filename;
+    const email = req.email;
+    const photo = req.file.filename;
+    const updatedAt = new Date();
+    const data = {
+      photo: `http://localhost:2002/file/${photo}`,
+      create_at: updatedAt
+    };
+    const result = await modUsers.updatePhoto(data, email);
+    helpers.resTransfer(res, data, 200, 'Succes Upload');
+    // console.log(req.email);
+    // console.log(req.file);
+    console.log(result);
+  } catch (error) {
+    console.log(error.message);
+    next({ status: 500, message: 'Internal Server Error!' });
   }
 };
 
@@ -196,5 +217,6 @@ module.exports = {
   detailUsers,
   register,
   login,
-  profile
+  profile,
+  addPhoto
 };
