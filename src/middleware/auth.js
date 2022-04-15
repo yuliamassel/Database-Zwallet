@@ -12,6 +12,7 @@ const veryfied = (req, res, next) => {
   try {
     const secretKey = process.env.SECRET_KEY_JWT;
     const decoded = jwt.verify(token, secretKey);
+    req.id = decoded.id;
     req.email = decoded.email;
     req.role = decoded.role;
     next();

@@ -84,6 +84,18 @@ const updatePhoto = (data, email) => {
   });
 };
 
+// const delPhoneNumber = (data, email) => {
+//   return new Promise((resolve, reject) => {
+//     connection.query('DELETE FROM users WHERE email=?', [data, email], (error, result) => {
+//       if (!error) {
+//         resolve(result);
+//       } else {
+//         reject(error);
+//       }
+//     });
+//   });
+// };
+
 const deleteUsers = (id) => {
   return new Promise((resolve, reject) => {
     connection.query('DELETE FROM users WHERE id=?', id, (error, result) => {
@@ -110,7 +122,7 @@ const detailUsers = (id) => {
 
 const getUserByEmail = (email) => {
   return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM users LEFT JOIN wallet ON users.id = wallet.user_id WHERE users.email = ?', email, (error, result) => {
+    connection.query('SELECT users.id, users.username, users.email, wallet.balance, wallet.income, wallet.expense, users.telephone, users.photo FROM users INNER JOIN wallet ON users.id = wallet.user_id WHERE users.email = ?', email, (error, result) => {
       if (!error) {
         resolve(result[0]);
       } else {

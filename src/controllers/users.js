@@ -11,7 +11,7 @@ const modWallet = require('../models/modWalet');
 const getUsers = async (req, res, next) => {
   try {
     const search = req.query.username || '';
-    const sort = req.query.sort || 'create_at';
+    const sort = req.query.sort || 'created_at';
     const updated = req.query.updated || 'asc';
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 3;
@@ -68,6 +68,8 @@ const register = async (req, res, next) => {
   try {
     const { username, email, password, addres, telephone } = req.body;
 
+    const userId = uuidv4();
+
     const user = await modUsers.findData(email);
 
     if (user.length > 0) {
@@ -76,7 +78,7 @@ const register = async (req, res, next) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
     const data = {
-      id: uuidv4(),
+      id: userId,
       username,
       email,
       password: hashPassword,
@@ -85,10 +87,17 @@ const register = async (req, res, next) => {
       verify: 'no'
     };
 
+    const dataWallet = {
+      id: uuidv4(),
+      user_id: userId,
+      name: username
+    };
+
     const finalResult = await modUsers.insertData(data);
-    const makeWallet = await modWallet.createData(data);
+    const makeWallet = await modWallet.createData(dataWallet);
     helpers.sendEmail(email);
-    helpers.response(res, finalResult, makeWallet, 200, 'great you come in');
+    helpers.response(res, finalResult, 200, 'great you come in');
+    console.log(makeWallet);
   } catch (error) {
     console.log(error);
     next(new createError.InternalServerError());
@@ -110,6 +119,7 @@ const login = async (req, res, next) => {
     if (!resultHash) return next(createError(403, 'sorry you entered wrong password'));
     const secretKey = process.env.SECRET_KEY_JWT;
     const payload = {
+      id: user.id,
       email: user.email,
       username: user.username,
       role: user.role
@@ -196,12 +206,28 @@ const addPhoto = async (req, res, next) => {
     const updatedAt = new Date();
     const data = {
       photo: `http://localhost:2002/file/${photo}`,
-      create_at: updatedAt
+      created_at: updatedAt
     };
     const result = await modUsers.updatePhoto(data, email);
     helpers.resTransfer(res, data, 200, 'Succes Upload');
     // console.log(req.email);
     // console.log(req.file);
+    console.log(result);
+  } catch (error) {
+    console.log(error.message);
+    next({ status: 500, message: 'Internal Server Error!' });
+  }
+};
+
+const addPhoneNumber = async (req, res, next) => {
+  try {
+    const email = req.email;
+    const telephone = parseInt(req.body.telephone);
+    const data = {
+      telephone: telephone
+    };
+    const result = await modUsers.updateUsers(data, email);
+    helpers.response(res, data, 200, null, 'Succes Add Phone Number');
     console.log(result);
   } catch (error) {
     console.log(error.message);
@@ -218,5 +244,6 @@ module.exports = {
   register,
   login,
   profile,
-  addPhoto
+  addPhoto,
+  addPhoneNumber
 };

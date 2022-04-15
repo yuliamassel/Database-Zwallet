@@ -1,6 +1,7 @@
 
 // const { v4: uuidv4 } = require('uuid');
 const modDeal = require('../models/modDeal');
+const modWallet = require('../models/modWalet');
 // const modUser = require('../models/modUser');
 const helpers = require('../helper/help');
 const createError = require('http-errors');
@@ -9,22 +10,42 @@ const createError = require('http-errors');
 const createDeal = async (req, res, next) => {
   try {
     // eslint-disable-next-line camelcase
-    const { source_id, destination_id, amount, balance_left, notes } = req.body;
+    const { source_id, destination_id, notes } = req.body;
+    const amountTransfer = parseInt(req.body.amount);
+    const [walletSender] = await modWallet.searchWallet(source_id);
+    const balanceSender = walletSender.balance;
+    const expenseSender = walletSender.expense;
+    const [walletReceiver] = await modWallet.searchWallet(destination_id);
+    const balanceReceiver = walletReceiver.balance;
+    const incomeReceiver = walletReceiver.balance;
+    const totalSenderBalance = parseInt(balanceSender - amountTransfer);
+    const totalSenderExpense = parseInt(expenseSender + amountTransfer);
+
+    const totalReceiverBalance = parseInt(balanceReceiver + amountTransfer);
+    const totalReceiverIncome = parseInt(incomeReceiver + amountTransfer);
     const data = {
       // eslint-disable-next-line camelcase
       source_id: source_id,
       // eslint-disable-next-line camelcase
       destination_id: destination_id,
-      amount: amount,
-      // eslint-disable-next-line camelcase
-      balance_left: balance_left,
-      create_at: new Date(),
+      amount: amountTransfer,
+      date: new Date(),
       notes: notes
     };
-    const result = await modDeal.createDeal(data);
-    // const email = req.email;
-    // const senderWallet = await modUser.getUserByEmail(email);
-    // console.log(senderWallet, 'ini WALLET');
+
+    const dataWalletSender = {
+      balance: totalSenderBalance,
+      expense: totalSenderExpense,
+      updated_at: new Date()
+    };
+
+    const dataWalletReceiver = {
+      balance: totalReceiverBalance,
+      income: totalReceiverIncome,
+      updated_at: new Date()
+    };
+
+    const result = await modDeal.createDeal(data, dataWalletSender, dataWalletReceiver);
     console.log(result, 'ini di BACKEND');
     helpers.resTransfer(res, data, 200, null, 'Transaction succes');
   } catch (error) {
@@ -106,18 +127,18 @@ const detailDeal = async (req, res, next) => {
     });
   }
 };
-const profile = async (req, res, next) => {
-  const email = req.email;
-  console.log(req.email);
-  try {
-    const user = await modDeal.getUserByEmail(email);
-    console.log(user);
-    helpers.response(res, user, 200, null, 'berhasil');
-  } catch (error) {
-    console.log(error);
-    next(createError(500, new createError.InternalServerError()));
-  }
-};
+// const profile = async (req, res, next) => {
+//   const email = req.email;
+//   console.log(req.email);
+//   try {
+//     const user = await modDeal.getUserByEmail(email);
+//     console.log(user);
+//     helpers.response(res, user, 200, null, 'berhasil');
+//   } catch (error) {
+//     console.log(error);
+//     next(createError(500, new createError.InternalServerError()));
+//   }
+// };
 
 const history = async (req, res, next) => {
   try {
@@ -125,7 +146,7 @@ const history = async (req, res, next) => {
     const sort = req.query.sort || 'date';
     const order = req.query.order || 'desc';
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 4;
+    const limit = parseInt(req.query.limit) || 2;
     const offset = (page - 1) * limit;
     const result = await modDeal.history({
       userId,
@@ -134,14 +155,17 @@ const history = async (req, res, next) => {
       limit,
       offset
     });
+
+    console.log(result);
+
     const calcResult = await modDeal.getTransactionByUserId(
       userId
     );
     const { total } = calcResult[0];
-    helpers.resTransfer(
+    helpers.response(
       res,
-      result,
       200,
+      result,
       `Data requests success! Total transactions from user with id: ${userId} are ${total}`,
       {
         currentPage: page,
@@ -162,6 +186,5 @@ module.exports = {
   updateDeal,
   deleteDeal,
   detailDeal,
-  profile,
   history
 };

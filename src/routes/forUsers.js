@@ -18,6 +18,7 @@ route
     upload.single('photo'),
     usersController.addPhoto
   )
+  .post('/profile/telephone', veryfied, usersController.addPhoneNumber)
   .delete('/:id', veryfied, usersController.deleteUsers)
   .get('/:id', veryfied, usersController.detailUsers);
 
